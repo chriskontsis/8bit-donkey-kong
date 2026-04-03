@@ -15,4 +15,4 @@ DonkeyKong
 assets/sprites/
 
 # High score file (local state, not shared)
-  scores/highscore.txt
+scores/highscore.txt
