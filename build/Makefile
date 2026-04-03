@@ -116,6 +116,43 @@ depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named DonkeyKong
+
+# Build rule for target.
+DonkeyKong: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 DonkeyKong
+.PHONY : DonkeyKong
+
+# fast build rule for target.
+DonkeyKong/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/build
+.PHONY : DonkeyKong/fast
+
+src/input/InputHandler.o: src/input/InputHandler.cpp.o
+.PHONY : src/input/InputHandler.o
+
+# target to build an object file
+src/input/InputHandler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/src/input/InputHandler.cpp.o
+.PHONY : src/input/InputHandler.cpp.o
+
+src/input/InputHandler.i: src/input/InputHandler.cpp.i
+.PHONY : src/input/InputHandler.i
+
+# target to preprocess a source file
+src/input/InputHandler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/src/input/InputHandler.cpp.i
+.PHONY : src/input/InputHandler.cpp.i
+
+src/input/InputHandler.s: src/input/InputHandler.cpp.s
+.PHONY : src/input/InputHandler.s
+
+# target to generate assembly for a file
+src/input/InputHandler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/src/input/InputHandler.cpp.s
+.PHONY : src/input/InputHandler.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -124,6 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... DonkeyKong"
+	@echo "... src/input/InputHandler.o"
+	@echo "... src/input/InputHandler.i"
+	@echo "... src/input/InputHandler.s"
 .PHONY : help
 
 

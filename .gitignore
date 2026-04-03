@@ -1,0 +1,18 @@
+build/
+
+# macOS
+.DS_Store
+*.dSYM/
+
+# VS Code
+.vscode/
+.cache/
+
+# Compiled binary
+DonkeyKong
+
+# Sprite sheets (added manually, not committed — too large / ROM rips)
+assets/sprites/
+
+# High score file (local state, not shared)
+  scores/highscore.txt

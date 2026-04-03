@@ -63,11 +63,11 @@ CMAKE_BINARY_DIR = /Users/chriskontsis/Desktop/DK/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all:
+all: CMakeFiles/DonkeyKong.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
-codegen:
+codegen: CMakeFiles/DonkeyKong.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -75,8 +75,40 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean:
+clean: CMakeFiles/DonkeyKong.dir/clean
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/DonkeyKong.dir
+
+# All Build rule for target.
+CMakeFiles/DonkeyKong.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/chriskontsis/Desktop/DK/build/CMakeFiles --progress-num=1,2 "Built target DonkeyKong"
+.PHONY : CMakeFiles/DonkeyKong.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/DonkeyKong.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chriskontsis/Desktop/DK/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/DonkeyKong.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chriskontsis/Desktop/DK/build/CMakeFiles 0
+.PHONY : CMakeFiles/DonkeyKong.dir/rule
+
+# Convenience name for target.
+DonkeyKong: CMakeFiles/DonkeyKong.dir/rule
+.PHONY : DonkeyKong
+
+# codegen rule for target.
+CMakeFiles/DonkeyKong.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/chriskontsis/Desktop/DK/build/CMakeFiles --progress-num=1,2 "Finished codegen for target DonkeyKong"
+.PHONY : CMakeFiles/DonkeyKong.dir/codegen
+
+# clean rule for target.
+CMakeFiles/DonkeyKong.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DonkeyKong.dir/build.make CMakeFiles/DonkeyKong.dir/clean
+.PHONY : CMakeFiles/DonkeyKong.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

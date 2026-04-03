@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.16)
+project (DonkeyKong CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(APPLE)
+    if(EXISTS "/opt/homebrew")
+        list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew")
+        include_directories("/opt/homebrew/include")
+        link_directories("/opt/homebrew/lib")
+    else()
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local")
+        include_directories("/usr/local/include")
+        link_directories("/usr/local/lib")
+    endif()
+endif()
+
+find_package(SDL2 REQUIRED)
+
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+add_executable(DonkeyKong ${SOURCES})
+
+target_include_directories(DonkeyKong PRIVATE
+    src
+    ${SDL2_INCLUDE_DIRS}
+)
+
+target_link_libraries(DonkeyKong PRIVATE
+    ${SDL2_LIBRARIES}
+    SDL2_image
+    SDL2_ttf)
+
+# Copy assets folder next to the binary after every build
+add_custom_command(TARGET DonkeyKong POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:DonkeyKong>/assets
+)
+
+# Copy scores folder next to the binary
+add_custom_command(TARGET DonkeyKong POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/scores
+        $<TARGET_FILE_DIR:DonkeyKong>/scores
+)
