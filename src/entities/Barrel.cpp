@@ -15,7 +15,7 @@ Barrel::Barrel(float x, float y, float dir) : Entity(x, y, Constants::BARREL_W, 
 void Barrel::update(float dt, const std::vector<Platform>& platforms)
 {
   prev_y = y;
-  was_in_air = !on_ground;
+  prev_on_ground = on_ground;
   on_ground = false;
 
   vy += Constants::GRAVITY * dt;
@@ -53,7 +53,7 @@ void Barrel::resolveY(const std::vector<Platform>& platforms)
       on_ground = true;
 
       // rev horiz dir on landing
-      if (was_in_air)
+      if (!prev_on_ground)
         vx = -vx;
     }
   }

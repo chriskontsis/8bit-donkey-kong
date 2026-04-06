@@ -22,7 +22,9 @@ class Mario : public Entity
  public:
   MarioState state = MarioState::IDLE;
   bool       on_ground = false;
+  bool       was_on_ground = false;
   bool       on_ladder = false;
+  bool       was_on_ladder = false;
   int        facing_dir = 1;
   float      death_timer = 0.0f;
   float      prev_y = 0.0f;

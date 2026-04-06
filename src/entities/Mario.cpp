@@ -22,15 +22,15 @@ void Mario::update(float dt, const InputHandler& input, const std::vector<Platfo
   }
 
   prev_y = y;
+  was_on_ground = on_ground;
   on_ground = false;
+  was_on_ladder = on_ladder;
   on_ladder = isOverLadder(ladders);
 
   handleInput(input, ladders);
 
   if (!on_ladder)
     applyGravity(dt);
-  else
-    vy = 0.0f;  // ladder cancels gravity
 
   y += vy * dt;
   resolveY(platforms);
@@ -57,6 +57,13 @@ void Mario::applyGravity(float dt)
 void Mario::handleInput(const InputHandler& input, const std::vector<Ladder>& ladders)
 {
   vx = 0.0f;
+
+  if (input.justPressed(SDL_SCANCODE_SPACE) && was_on_ground)
+  {
+    vy = Constants::MARIO_JUMP_VY;
+    on_ground = false;
+    return;
+  }
 
   if (on_ladder)
   {
@@ -90,7 +97,7 @@ void Mario::handleInput(const InputHandler& input, const std::vector<Ladder>& la
       vx = Constants::MARIO_RUN_SPEED;
       facing_dir = 1;
     }
-    if (input.justPressed(SDL_SCANCODE_SPACE) && on_ground)
+    if (input.justPressed(SDL_SCANCODE_SPACE) && was_on_ground)
     {
       vy = Constants::MARIO_JUMP_VY;
       on_ground = false;
@@ -118,10 +125,18 @@ void Mario::resolveY(const std::vector<Platform>& platforms)
     }
 
     // hitting underside
-    else if ((prev_y) >= p.y + p.height && y <= p.y + p.height)
+    else if (!on_ladder && prev_y >= p.y + p.height && y <= p.y + p.height)
     {
       y = p.y + p.height;
       vy = 0.0f;
+    }
+
+    // Climbing up onto platform via ladder
+    else if (was_on_ladder && vy < 0 && prev_y + height > p.y && y + height <= p.y)
+    {
+      y = p.y - height;
+      vy = 0.0f;
+      on_ground = true;
     }
   }
 }
@@ -137,12 +152,12 @@ void Mario::clampToScreen()
 bool Mario::isOverLadder(const std::vector<Ladder>& ladders) const
 {
   float cx = centerX();
-  float cy = centerY();
+  float feet = y + height;
 
   for (const auto& ladder : ladders)
   {
-    if (cx >= ladder.x && cx <= ladder.x + ladder.width && cy >= ladder.y &&
-        cy <= ladder.y + ladder.height)
+    if (cx >= ladder.x && cx <= ladder.x + ladder.width && feet >= ladder.y &&
+        feet <= ladder.y + ladder.height)
       return true;
   }
   return false;

@@ -8,7 +8,7 @@ class Barrel : public Entity
 {
  public:
   bool  on_ground = false;
-  bool  was_in_air = true;  // used 4 landing and rev dir
+  bool  prev_on_ground = true;
   float roll_angle = 0.0f;  // visual rotation
   float prev_y = 0.0f;
 
