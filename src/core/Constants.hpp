@@ -10,7 +10,7 @@ constexpr int WINDOW_HEIGHT{672};
 // --- Physics
 constexpr float GRAVITY{900.0f};          // px/s^2
 constexpr float MARIO_RUN_SPEED{130.0f};  // px/s
-constexpr float MARIO_JUMP_VY{-400.0f};   // px/s (neg = up)
+constexpr float MARIO_JUMP_VY{-360.0f};   // px/s (neg = up)
 constexpr float MARIO_CLIMB_SPD{90.0f};   // px/s on ladders
 
 // --- Entity sizes
@@ -28,6 +28,7 @@ constexpr float FIRE_H{20.0f};
 // ── Gameplay
 constexpr int   MARIO_START_LIVES{3};
 constexpr float BARREL_ROLL_SPEED{110.0f};
+constexpr float BARREL_DESCEND_SPD{90.0f};   // px/s down a ladder
 constexpr float DK_BARREL_INTERVAL{2.8f};    // seconds between
 constexpr float DEATH_DELAY{1.5f};           // seconds before respawn
 constexpr float LEVEL_COMPLETE_DELAY{2.5f};  // pause before
