@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <string_view>
 
 class ScoreManager
 {
@@ -8,7 +9,7 @@ class ScoreManager
   int lives = 0;
   int high_score = 0;
 
-  explicit ScoreManager(const std::string& save_path);
+  explicit ScoreManager(std::string_view save_path);
   ~ScoreManager();
 
   void addPoints(int pts);

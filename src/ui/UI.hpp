@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <string>
+#include <string_view>
 
 #include "SDL2/SDL_render.h"
 #include "ui/ScoreManager.hpp"
@@ -30,5 +30,5 @@ class UI
   SDL_Renderer* renderer_ = nullptr;
   TTF_Font*     font_ = nullptr;
 
-  void drawText(const std::string& text, int x, int y, SDL_Color color = {255, 255, 255, 255});
+  void drawText(std::string_view text, int x, int y, SDL_Color color = {255, 255, 255, 255});
 };

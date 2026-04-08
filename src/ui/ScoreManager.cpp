@@ -5,7 +5,7 @@
 
 #include "core/Constants.hpp"
 
-ScoreManager::ScoreManager(const std::string& save_path) : save_path_(save_path)
+ScoreManager::ScoreManager(std::string_view save_path) : save_path_(save_path)
 {
   reset();
   load();

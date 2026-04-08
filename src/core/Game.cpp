@@ -2,49 +2,40 @@
 
 #include <SDL2/SDL_video.h>
 
+#include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_render.h"
 #include "SDL2/SDL_scancode.h"
 #include "SDL2/SDL_timer.h"
-#include "SDL2/SDL_video.h"
 #include "core/Constants.hpp"
 #include "core/GameState.hpp"
+#include "geometry/Platform.hpp"
 #include "levels/Level100m.hpp"
 #include "levels/Level25m.hpp"
 #include "levels/Level50m.hpp"
 
-// Construction / destruction
-Game::Game() {}
-Game::~Game()
-{
-  delete ui_;
-  if (renderer_)
-    SDL_DestroyRenderer(renderer_);
-  if (window_)
-    SDL_DestroyWindow(window_);
-  SDL_Quit();
-}
-
 // Init
-bool Game::init()
+std::expected<void, std::string> Game::init()
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    return false;
+    return std::unexpected{"SDL_Init failed: " + std::string{SDL_GetError()}};
 
-  window_ = SDL_CreateWindow("Donkey Kong", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                             Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-
+  window_.reset(SDL_CreateWindow("Donkey Kong", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                 Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT,
+                                 SDL_WINDOW_SHOWN));
   if (!window_)
-    return false;
+    return std::unexpected{"SDL_CreateWindow failed: " + std::string{SDL_GetError()}};
 
-  renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  renderer_.reset(
+      SDL_CreateRenderer(window_.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
   if (!renderer_)
-    return false;
+    return std::unexpected{"SDL_CreateRenderer failed: " + std::string{SDL_GetError()}};
 
-  ui_ = new UI(renderer_);
-  return true;
+  ui_ = std::make_unique<UI>(renderer_.get());
+  return {};
 }
 
 // Main loop
@@ -110,7 +101,7 @@ void Game::updateMenu()
 {
   if (input_.justPressed(SDL_SCANCODE_RETURN))
   {
-    current_level_ = 0;
+    current_level_ = 2;
     score_.reset();
     loadLevel((current_level_));
     state_ = GameState::PLAYING;
@@ -134,9 +125,7 @@ void Game::updatePlaying(float dt)
     f.update(dt);
 
   // remove inactive barrels
-  barrels_.erase(
-      std::remove_if(barrels_.begin(), barrels_.end(), [](const Barrel& b) { return !b.active; }),
-      barrels_.end());
+  std::erase_if(barrels_, [](const Barrel& b) { return !b.active; });
 
   spawnBarrelIfReady();
   checkCollisions();
@@ -158,14 +147,28 @@ void Game::updatePlaying(float dt)
     }
   }
 
+  // Tick hole open delays
+  for (auto& p : level_->platforms)
+    if (p.hole_open_delay > 0.0f)
+      p.hole_open_delay -= dt;
+
   // Rivet Collection (level 100m)
   for (auto& r : level_->rivets)
   {
     if (!r.collected && mario_->x + mario_->width > r.x && mario_->x < r.x + r.width &&
-        mario_->y + mario_->height > r.y && mario_->y < r.y + r.height)
+        mario_->y + mario_->height >= r.y && mario_->y < r.y + r.height)
     {
       r.collected = true;
       score_.addPoints(Constants::POINTS_RIVET);
+      if (r.platform_idx >= 0 && r.platform_idx < static_cast<int>(level_->platforms.size()))
+      {
+        auto& p = level_->platforms[r.platform_idx];
+        if (!p.hole1)
+          p.hole1 = Platform::Hole(r.x, r.width);
+        else
+          p.hole2 = Platform::Hole(r.x, r.width);
+        p.hole_open_delay = 1.2f;  // grace period before hole is passable
+      }
     }
   }
 
@@ -265,52 +268,52 @@ void Game::render()
 {
   if (state_ == GameState::MENU)
   {
-    ui_->renderMenu(renderer_);
-    SDL_RenderPresent(renderer_);
+    ui_->renderMenu(renderer_.get());
+    SDL_RenderPresent(renderer_.get());
     return;
   }
 
   // Clear with level background
   if (level_)
-    level_->renderBackground(renderer_);
+    level_->renderBackground(renderer_.get());
 
   if (state_ == GameState::PLAYING || state_ == GameState::DK_ESCAPING)
   {
     // Static geometry
     for (const auto& p : level_->platforms)
-      p.render(renderer_);
+      p.render(renderer_.get());
     for (const auto& l : level_->ladders)
-      l.render(renderer_);
+      l.render(renderer_.get());
     for (const auto& r : level_->rivets)
-      r.render(renderer_);
+      r.render(renderer_.get());
 
     // Entities
-    dk_->render(renderer_);
-    pauline_->render(renderer_);
+    dk_->render(renderer_.get());
+    pauline_->render(renderer_.get());
     for (auto& b : barrels_)
-      b.render(renderer_);
+      b.render(renderer_.get());
     for (auto& f : level_->fire_enemies)
-      f.render(renderer_);
-    mario_->render(renderer_);
+      f.render(renderer_.get());
+    mario_->render(renderer_.get());
 
     ui_->renderHUD(score_, LEVEL_NUMS[current_level_]);
 
     if (state_ == GameState::LEVEL_COMPLETE)
     {
       int next = (current_level_ + 1 < 3) ? LEVEL_NUMS[current_level_ + 1] : 0;
-      ui_->renderLevelComplete(renderer_, next);
+      ui_->renderLevelComplete(renderer_.get(), next);
     }
   }
   else if (state_ == GameState::GAME_OVER)
   {
-    ui_->renderGameOver(renderer_);
+    ui_->renderGameOver(renderer_.get());
   }
   else if (state_ == GameState::WIN)
   {
-    ui_->renderWin(renderer_, score_.score);
+    ui_->renderWin(renderer_.get(), score_.score);
   }
 
-  SDL_RenderPresent(renderer_);
+  SDL_RenderPresent(renderer_.get());
 }
 
 // Helpers
@@ -363,23 +366,12 @@ void Game::checkCollisions()
   if (!mario_ || mario_->isDead())
     return;
 
-  for (const auto& b : barrels_)
-  {
-    if (b.active && mario_->overlaps(b))
-    {
-      score_.loseLife();
-      mario_->kill();
-      return;
-    }
-  }
+  auto hitsMario = [&](const auto& e) { return e.active && mario_->overlaps(e); };
 
-  for (const auto& f : level_->fire_enemies)
+  if (std::ranges::any_of(barrels_, hitsMario) ||
+      std::ranges::any_of(level_->fire_enemies, hitsMario))
   {
-    if (f.active && mario_->overlaps(f))
-    {
-      score_.loseLife();
-      mario_->kill();
-      return;
-    }
+    score_.loseLife();
+    mario_->kill();
   }
 }

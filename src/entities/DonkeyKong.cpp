@@ -37,21 +37,23 @@ void DonkeyKong::render(SDL_Renderer* renderer)
   if (!active)
     return;
 
-  // Cosmetic barrel stack
+  // Cosmetic barrel stack — 2x2 grid against left wall
+  float bx = x - 56.0f;
+  float by = y + height - 16.0f;  // bottom row sits on platform surface
   SDL_SetRenderDrawColor(renderer, 200, 150, 50, 255);
-  for (int i = 0; i < 3; ++i)
-  {
-    SDL_FRect b = {x - 28.0f, y + height - (i + 1) * 22.0f, 20.0f, 18.0f};
-    SDL_RenderFillRectF(renderer, &b);
-  }
-
-  // Dark band on each stacked barrel
+  for (int row = 0; row < 2; ++row)
+    for (int col = 0; col < 2; ++col)
+    {
+      SDL_FRect b = {bx + col * 22.0f, by - row * 18.0f, 18.0f, 16.0f};
+      SDL_RenderFillRectF(renderer, &b);
+    }
   SDL_SetRenderDrawColor(renderer, 140, 90, 20, 255);
-  for (int i = 0; i < 3; ++i)
-  {
-    SDL_FRect band = {x - 28.0f, y + height - (i + 1) * 22.0f + 7.0f, 20.0f, 3.0f};
-    SDL_RenderFillRectF(renderer, &band);
-  }
+  for (int row = 0; row < 2; ++row)
+    for (int col = 0; col < 2; ++col)
+    {
+      SDL_FRect band = {bx + col * 22.0f, by - row * 18.0f + 6.0f, 18.0f, 3.0f};
+      SDL_RenderFillRectF(renderer, &band);
+    }
 
   // body
   SDL_SetRenderDrawColor(renderer, 101, 67, 33, 255);

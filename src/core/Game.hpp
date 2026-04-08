@@ -2,11 +2,13 @@
 
 #include <SDL2/SDL.h>
 
+#include <array>
+#include <expected>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "SDL2/SDL_render.h"
-#include "SDL2/SDL_video.h"
 #include "core/GameState.hpp"
 #include "entities/Barrel.hpp"
 #include "entities/DonkeyKong.hpp"
@@ -21,21 +23,23 @@
 class Game
 {
  public:
-  Game();
-  ~Game();
+  Game() = default;
+  ~Game() { SDL_Quit(); }
 
-  bool init();
+  std::expected<void, std::string> init();
   void run();
 
  private:
-  // SDL context
-  SDL_Window*   window_ = nullptr;
-  SDL_Renderer* renderer_ = nullptr;
+  using WindowPtr = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
+  using RendererPtr = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
+
+  WindowPtr           window_{nullptr, SDL_DestroyWindow};
+  RendererPtr         renderer_{nullptr, SDL_DestroyRenderer};
+  std::unique_ptr<UI> ui_;
 
   // Core sys
   InputHandler input_;
   ScoreManager score_{"scores/highscore.txt"};
-  UI*          ui_ = nullptr;
   GameState    state_ = GameState::MENU;
   bool         running_ = true;
 
@@ -71,5 +75,5 @@ class Game
   void checkCollisions();
   void spawnBarrelIfReady();
 
-  static constexpr int LEVEL_NUMS[3] = {25, 50, 100};
+  static constexpr std::array<int, 3> LEVEL_NUMS{25, 50, 100};
 };

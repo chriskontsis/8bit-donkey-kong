@@ -93,7 +93,7 @@ void Barrel::resolveY(const std::vector<Platform>& platforms)
       continue;
 
     // landing on top of platform
-    if (prev_bottom <= p.y && cur_bottom >= p.y)
+    if (prev_bottom <= p.y && cur_bottom >= p.y && !p.hasHoleAt(x, width))
     {
       y = p.y - height;
       vy = 0.0f;
