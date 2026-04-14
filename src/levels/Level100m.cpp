@@ -18,26 +18,31 @@ Level100m::Level100m()
   platforms.push_back({0, 192, W, 16, 0.0f, steel});  // row 1
   platforms.push_back({0, 80, W, 16, 0.0f, steel});   // DK platform
 
-  // ── Ladders — 3 per gap (left, center, right)
-  ladders.push_back({60, 80, 20, 112});
-  ladders.push_back({340, 80, 20, 112});
-  ladders.push_back({660, 80, 20, 112});
+  // ── Ladders — 3 per gap, staggered so no column appears straight
+  // DK platform → Row 1
+  ladders.push_back({60,  80, 20, 112});
+  ladders.push_back({330, 80, 20, 112});
+  ladders.push_back({620, 80, 20, 112});
 
-  ladders.push_back({140, 192, 20, 112});
-  ladders.push_back({430, 192, 20, 112});
-  ladders.push_back({620, 192, 20, 112});
+  // Row 1 → Row 2  (shift right)
+  ladders.push_back({170, 192, 20, 112});
+  ladders.push_back({460, 192, 20, 112});
+  ladders.push_back({650, 192, 20, 112});
 
-  ladders.push_back({80, 304, 20, 112});
-  ladders.push_back({360, 304, 20, 112});
-  ladders.push_back({650, 304, 20, 112});
+  // Row 2 → Row 3  (shift left)
+  ladders.push_back({80,  304, 20, 112});
+  ladders.push_back({350, 304, 20, 112});
+  ladders.push_back({600, 304, 20, 112});
 
-  ladders.push_back({180, 416, 20, 112});
-  ladders.push_back({450, 416, 20, 112});
+  // Row 3 → Row 4  (shift right)
+  ladders.push_back({220, 416, 20, 112});
+  ladders.push_back({480, 416, 20, 112});
   ladders.push_back({680, 416, 20, 112});
 
-  ladders.push_back({80, 528, 20, 112});
-  ladders.push_back({370, 528, 20, 112});
-  ladders.push_back({640, 528, 20, 112});
+  // Row 4 → Ground  (shift left)
+  ladders.push_back({100, 528, 20, 112});
+  ladders.push_back({400, 528, 20, 112});
+  ladders.push_back({650, 528, 20, 112});
 
   // ── Rivets — placed in gaps between ladders on each row
   // Row 4 (platforms[1]): ladders at x=80, 370, 640
